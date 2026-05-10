@@ -3,50 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ekonomi Masası</title>
+    <title>Ekonomi Masası vFinal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">
-        <h1 class="header-title">EKONOMİ MASASI 📈</h1>
+    <div class="header no-print">
+        <h1 class="header-title neon-main">EKONOMİ MASASI 📈</h1>
+    </div>
+
+    <div class="ust-filtreler no-print">
+        <button class="ust-btn" onclick="window.print()">🖨️ MANUEL YAZDIR</button>
+        <input type="date" id="tarih-filtre" class="ust-btn-date" onchange="filtreleVeYazdir()">
+        <select id="ay-filtre" class="ust-btn-select" onchange="filtreleVeYazdir()">
+            <option value="all">Tüm Zamanlar</option>
+            <option value="0">Ocak</option><option value="1">Şubat</option>
+            <option value="2">Mart</option><option value="3">Nisan</option>
+            <option value="4">Mayıs</option><option value="5">Haziran</option>
+            <option value="6">Temmuz</option><option value="7">Ağustos</option>
+            <option value="8">Eylül</option><option value="9">Ekim</option>
+            <option value="10">Kasım</option><option value="11">Aralık</option>
+        </select>
     </div>
 
     <div class="ozet">
-        <div class="buyuk-kart">
+        <div class="buyuk-kart no-print">
             <div id="net-bakiye" class="kalan-tutar">0 TL</div>
-            <div style="color: #666; font-size: 12px; margin-top: 10px; letter-spacing: 2px;">KULLANILABİLİR BAKİYE</div>
+            <div class="etiket-alt">KULLANILABİLİR BAKİYE</div>
         </div>
 
-        <div class="gelir-alani">
-            <input type="number" id="bakiye-input" placeholder="Gelir Miktarı" onkeydown="if(event.key==='Enter') setBakiye()">
-            <button onclick="setBakiye()" class="set-et-btn">SET ET</button>
+        <div class="gelir-alani no-print">
+            <input type="number" id="gelir-input" placeholder="Ana Geliri Girin" onkeydown="handleEnter(event, 'setGelir')">
+            <button onclick="setGelir()" class="set-et-btn">SET ET</button>
         </div>
 
-        <div class="kucuk-kartlar">
-            <div class="kucuk-kart">
+        <div class="kucuk-kartlar no-print">
+            <div class="kucuk-kart neon-green-border">
                 <div class="label">Toplam Yatırım</div>
                 <div id="toplam-yatirim" class="deger-yesil">0 TL</div>
             </div>
-            <div class="kucuk-kart">
+            <div class="kucuk-kart neon-red-border">
                 <div class="label">Toplam Gider</div>
                 <div id="toplam-gider" class="deger-kirmizi">0 TL</div>
             </div>
         </div>
 
-        <div class="sekmeler">
-            <button id="sekme-harcama" class="sekme active" onclick="sekmeDegistir('harcama')">HARCAMALAR</button>
-            <button id="sekme-yatirim" class="sekme" onclick="sekmeDegistir('yatirim')">YATIRIMLAR</button>
+        <div class="sekmeler no-print">
+            <button id="sekme-harcama" class="sekme active red" onclick="sekmeDegistir('harcama')">HARCAMALAR</button>
+            <button id="sekme-yatirim" class="sekme green" onclick="sekmeDegistir('yatirim')">YATIRIMLAR</button>
         </div>
 
-        <div id="islem-listesi"></div>
+        <div class="print-only">
+            <div class="print-header">
+                <h2>EKONOMİ MASASI RAPORU</h2>
+                <p id="print-info"></p>
+            </div>
+            <div class="section-title">YATIRIMLAR</div>
+            <div id="print-yatirim-listesi"></div>
+            <div class="section-title">HARCAMALAR</div>
+            <div id="print-harcama-listesi"></div>
+            <div class="report-summary">
+                <div class="summary-line"><span>TOPLAM ANA GELİR:</span> <b id="p-gelir">0 TL</b></div>
+                <div class="summary-line"><span>TOPLAM GİDERLER:</span> <b id="p-gider">0 TL</b></div>
+                <div class="summary-line"><span>TOPLAM YATIRIMLAR:</span> <b id="p-yatirim">0 TL</b></div>
+                <div class="summary-line final-line"><span>SONUÇ (KALAN NET):</span> <b id="p-net">0 TL</b></div>
+            </div>
+        </div>
+
+        <div id="liste-alani" class="no-print">
+             <div id="ekran-liste"></div>
+        </div>
     </div>
 
-    <div class="giris-paneli">
+    <div class="giris-paneli no-print">
         <div class="input-row">
             <input type="text" id="islem-aciklama" placeholder="Açıklama">
-            <input type="number" id="islem-miktar" placeholder="Miktar (TL)" onkeydown="if(event.key==='Enter') islemEkle()">
+            <input type="number" id="islem-miktar" placeholder="Miktar (TL)" onkeydown="handleEnter(event, 'islemEkle')">
         </div>
-        <button id="btn-kaydet-islem" class="btn-kaydet harcama-modu" onclick="islemEkle()">－ HARCAMAYI KAYDET</button>
+        <button id="btn-kaydet" class="btn-kaydet harcama-modu" onclick="islemEkle()">KAYDET</button>
     </div>
 
     <script src="script.js"></script>

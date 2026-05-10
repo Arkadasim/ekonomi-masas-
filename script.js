@@ -1,70 +1,120 @@
-let veriler = JSON.parse(localStorage.getItem('ekonomiVerileri')) || { bakiye: 0, islemler: [] };
+let veriler = JSON.parse(localStorage.getItem('eko_master_vFinal')) || { bakiye: 0, islemler: [] };
 let aktifSekme = 'harcama';
 
-function verileriKaydet() { localStorage.setItem('ekonomiVerileri', JSON.stringify(veriler)); }
+function verileriKaydet() { localStorage.setItem('eko_master_vFinal', JSON.stringify(veriler)); }
 
-function setBakiye() {
-    const input = document.getElementById('bakiye-input');
-    const yeniBakiye = parseFloat(input.value);
-    if (!isNaN(yeniBakiye)) {
-        veriler.bakiye = yeniBakiye;
-        input.value = '';
+function handleEnter(event, func) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        if (func === 'setGelir') setGelir();
+        if (func === 'islemEkle') islemEkle();
+    }
+}
+
+function setGelir() {
+    const input = document.getElementById('gelir-input');
+    if (input && input.value !== "") {
+        veriler.bakiye = parseFloat(input.value);
+        input.value = "";
         verileriKaydet();
         hesaplaVeCiz();
     }
 }
 
 function islemEkle() {
-    const aciklama = document.getElementById('islem-aciklama').value;
-    const miktar = parseFloat(document.getElementById('islem-miktar').value);
-    if (aciklama && !isNaN(miktar)) {
-        const yeniIslem = { id: Date.now(), aciklama, miktar, tur: aktifSekme, tarih: new Date().toLocaleString('tr-TR') };
-        veriler.islemler.push(yeniIslem);
-        document.getElementById('islem-aciklama').value = '';
-        document.getElementById('islem-miktar').value = '';
+    const acikInput = document.getElementById('islem-aciklama');
+    const mikInput = document.getElementById('islem-miktar');
+    if (acikInput && mikInput && acikInput.value && mikInput.value) {
+        const simdi = new Date();
+        veriler.islemler.push({
+            id: Date.now(),
+            aciklama: acikInput.value,
+            miktar: parseFloat(mikInput.value),
+            tur: aktifSekme,
+            tarih: simdi.toLocaleDateString('tr-TR'),
+            saat: simdi.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
+            ay: simdi.getMonth(),
+            tamTarih: simdi.toISOString().split('T')[0]
+        });
+        acikInput.value = ""; 
+        mikInput.value = "";
         verileriKaydet();
         hesaplaVeCiz();
     }
 }
 
 function islemSil(id) {
-    veriler.islemler = veriler.islemler.filter(i => i.id !== id);
-    verileriKaydet();
+    if(confirm("Silmek istediğine emin misin?")) {
+        veriler.islemler = veriler.islemler.filter(i => i.id !== id);
+        verileriKaydet();
+        hesaplaVeCiz();
+    }
+}
+
+function sekmeDegistir(s) {
+    aktifSekme = s;
+    document.getElementById('sekme-harcama').classList.toggle('active', s === 'harcama');
+    document.getElementById('sekme-yatirim').classList.toggle('active', s === 'yatirim');
+    document.getElementById('btn-kaydet').className = `btn-kaydet ${s}-modu`;
     hesaplaVeCiz();
 }
 
-function sekmeDegistir(sekme) {
-    aktifSekme = sekme;
-    document.getElementById('sekme-harcama').classList.toggle('active', sekme === 'harcama');
-    document.getElementById('sekme-yatirim').classList.toggle('active', sekme === 'yatirim');
-    const btn = document.getElementById('btn-kaydet-islem');
-    if (sekme === 'harcama') {
-        btn.innerText = '－ HARCAMAYI KAYDET';
-        btn.className = 'btn-kaydet harcama-modu';
-    } else {
-        btn.innerText = '＋ YATIRIMI KAYDET';
-        btn.className = 'btn-kaydet yatirim-modu';
+function filtreleVeYazdir() {
+    hesaplaVeCiz(); 
+    const ayElem = document.getElementById('ay-filtre');
+    const tarihElem = document.getElementById('tarih-filtre');
+    
+    if ((ayElem && ayElem.value !== 'all') || (tarihElem && tarihElem.value !== "")) {
+        setTimeout(() => {
+            window.print();
+        }, 500);
     }
 }
 
 function hesaplaVeCiz() {
-    let toplamGider = 0, toplamYatirim = 0;
-    const liste = document.getElementById('islem-listesi');
-    liste.innerHTML = '';
-    veriler.islemler.forEach(islem => {
-        if (islem.tur === 'harcama') toplamGider += islem.miktar;
-        else toplamYatirim += islem.miktar;
-        const div = document.createElement('div');
-        div.className = `kalem ${islem.tur}`;
-        div.innerHTML = `<div><strong style="color:white">${islem.aciklama}</strong><br><small style="color:#444">${islem.tarih}</small></div>
-            <div style="display:flex; align-items:center; gap:10px;"><span style="font-weight:bold; color:${islem.tur==='harcama'?'#ff3355':'#00ffa3'}">${islem.miktar.toLocaleString('tr-TR')} TL</span>
-            <span onclick="islemSil(${islem.id})" style="color:#555; cursor:pointer; padding:5px;">✕</span></div>`;
-        liste.prepend(div);
+    const ayFiltreElem = document.getElementById('ay-filtre');
+    const secilenAy = ayFiltreElem ? ayFiltreElem.value : 'all';
+    const tarihFiltreElem = document.getElementById('tarih-filtre');
+    const tarihFiltre = tarihFiltreElem ? tarihFiltreElem.value : "";
+    
+    const ekranListe = document.getElementById('ekran-liste');
+    const pGiderList = document.getElementById('print-harcama-listesi');
+    const pYatirimList = document.getElementById('print-yatirim-listesi');
+    const pInfo = document.getElementById('print-info');
+
+    if(!ekranListe || !pGiderList || !pYatirimList) return;
+
+    ekranListe.innerHTML = ""; pGiderList.innerHTML = ""; pYatirimList.innerHTML = "";
+    let tGider = 0, tYatirim = 0;
+
+    if (tarihFiltre) {
+        pInfo.innerText = "Tarih: " + tarihFiltre.split('-').reverse().join('.');
+    } else if (secilenAy !== 'all') {
+        const aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+        pInfo.innerText = aylar[secilenAy] + " Ayı Raporu";
+    } else {
+        pInfo.innerText = "Genel Rapor";
+    }
+
+    veriler.islemler.forEach(i => {
+        const ayUygun = (secilenAy === 'all' || i.ay == secilenAy);
+        const tarihUygun = (tarihFiltre === "" || i.tamTarih === tarihFiltre);
+        if (ayUygun && tarihUygun) {
+            const html = `<div class="kalem ${i.tur}"><div><strong>${i.aciklama}</strong><br><small>${i.tarih} - ${i.saat}</small></div><div><b>${i.miktar.toLocaleString('tr-TR')} TL</b> <span class="sil-btn no-print" onclick="islemSil(${i.id})">✖</span></div></div>`;
+            if (i.tur === 'harcama') { tGider += i.miktar; pGiderList.innerHTML += html; }
+            else { tYatirim += i.miktar; pYatirimList.innerHTML += html; }
+            if (i.tur === aktifSekme) ekranListe.innerHTML += html;
+        }
     });
-    const netBakiye = veriler.bakiye - toplamGider;
-    document.getElementById('net-bakiye').innerText = netBakiye.toLocaleString('tr-TR') + ' TL';
-    document.getElementById('toplam-gider').innerText = toplamGider.toLocaleString('tr-TR') + ' TL';
-    document.getElementById('toplam-yatirim').innerText = toplamYatirim.toLocaleString('tr-TR') + ' TL';
+
+    const net = (veriler.bakiye || 0) - (tGider + tYatirim);
+    document.getElementById('net-bakiye').innerText = net.toLocaleString('tr-TR') + " TL";
+    document.getElementById('toplam-gider').innerText = tGider.toLocaleString('tr-TR') + " TL";
+    document.getElementById('toplam-yatirim').innerText = tYatirim.toLocaleString('tr-TR') + " TL";
+    document.getElementById('p-gelir').innerText = (veriler.bakiye || 0).toLocaleString('tr-TR') + " TL";
+    document.getElementById('p-gider').innerText = tGider.toLocaleString('tr-TR') + " TL";
+    document.getElementById('p-yatirim').innerText = tYatirim.toLocaleString('tr-TR') + " TL";
+    document.getElementById('p-net').innerText = net.toLocaleString('tr-TR') + " TL";
 }
 
-window.onload = function() { sekmeDegistir('harcama'); hesaplaVeCiz(); };
+window.onload = hesaplaVeCiz;
