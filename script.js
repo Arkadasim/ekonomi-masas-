@@ -1,8 +1,8 @@
-let veriler = JSON.parse(localStorage.getItem('eko_master_vFinal')) || { bakiye: 0, islemler: [] };
+let veriler = JSON.parse(localStorage.getItem('eko_vFinal_Master')) || { bakiye: 0, islemler: [] };
 let aktifSekme = 'harcama';
 let myChart = null;
 
-function verileriKaydet() { localStorage.setItem('eko_master_vFinal', JSON.stringify(veriler)); }
+function verileriKaydet() { localStorage.setItem('eko_vFinal_Master', JSON.stringify(veriler)); }
 
 function handleEnter(event, func) {
     if (event.key === "Enter") {
@@ -14,8 +14,9 @@ function handleEnter(event, func) {
 
 function setGelir() {
     const input = document.getElementById('gelir-input');
-    if (input && input.value !== "") {
-        veriler.bakiye = parseFloat(input.value);
+    const miktar = parseFloat(input.value);
+    if (!isNaN(miktar)) {
+        veriler.bakiye = miktar;
         input.value = "";
         verileriKaydet();
         hesaplaVeCiz();
@@ -25,15 +26,15 @@ function setGelir() {
 function islemEkle() {
     const acikInput = document.getElementById('islem-aciklama');
     const mikInput = document.getElementById('islem-miktar');
-    if (acikInput.value && mikInput.value) {
+    const miktar = parseFloat(mikInput.value);
+    if (acikInput.value && !isNaN(miktar)) {
         const simdi = new Date();
         veriler.islemler.push({
             id: Date.now(),
             aciklama: acikInput.value,
-            miktar: parseFloat(mikInput.value),
+            miktar: miktar,
             tur: aktifSekme,
             tarih: simdi.toLocaleDateString('tr-TR'),
-            saat: simdi.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
             ay: simdi.getMonth(),
             tamTarih: simdi.toISOString().split('T')[0]
         });
@@ -66,13 +67,11 @@ function grafikCiz(yatirimlar) {
         return;
     }
     grafikAlani.style.display = 'block';
-
     const gruplanmis = {};
     yatirimlar.forEach(y => {
         const isim = y.aciklama.toUpperCase();
         gruplanmis[isim] = (gruplanmis[isim] || 0) + y.miktar;
     });
-
     const etiketler = Object.keys(gruplanmis);
     const degerler = Object.values(gruplanmis);
     const toplam = degerler.reduce((a, b) => a + b, 0);
@@ -127,11 +126,13 @@ function hesaplaVeCiz() {
     });
 
     grafikCiz(grafikYatirimlar);
-    const net = (veriler.bakiye || 0) - (tGider + tYatirim);
+    const net = (veriler.bakiye) - (tGider + tYatirim);
+    
     document.getElementById('net-bakiye').innerText = net.toLocaleString() + " TL";
     document.getElementById('toplam-gider').innerText = tGider.toLocaleString() + " TL";
     document.getElementById('toplam-yatirim').innerText = tYatirim.toLocaleString() + " TL";
-    document.getElementById('p-gelir').innerText = (veriler.bakiye || 0).toLocaleString() + " TL";
+    
+    document.getElementById('p-gelir').innerText = veriler.bakiye.toLocaleString() + " TL";
     document.getElementById('p-gider').innerText = tGider.toLocaleString() + " TL";
     document.getElementById('p-yatirim').innerText = tYatirim.toLocaleString() + " TL";
     document.getElementById('p-net').innerText = net.toLocaleString() + " TL";

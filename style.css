@@ -1,50 +1,38 @@
 :root { --bg: #050505; --card: #111; --green: #00ffa3; --red: #ff3355; --gold: #d4af37; }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
 body { background: var(--bg); color: #fff; max-width: 450px; margin: 0 auto; padding-bottom: 250px; }
-
 .header { padding: 25px 20px 10px; text-align: center; }
 .neon-main { font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--gold); }
-
-/* KÜÇÜK GRAFİK STİLİ */
 .grafik-konteyner { width: 85%; margin: 0 auto 15px; background: #0a0a0a; border-radius: 20px; padding: 10px; height: 180px; border: 1px solid #222; }
-canvas { width: 100% !important; height: 100% !important; }
-
 .ust-filtreler { display: flex; gap: 8px; padding: 0 15px 15px; justify-content: center; }
 .ust-btn, .ust-btn-date, .ust-btn-select { background: #1a1a1a; border: 1px solid #333; color: #ccc; padding: 10px; border-radius: 10px; font-size: 11px; cursor: pointer; }
-
 .buyuk-kart { background: var(--card); border-radius: 25px; padding: 30px 20px; margin-bottom: 15px; border: 1px solid rgba(212, 175, 55, 0.2); text-align: center; }
-.kalan-tutar { font-size: 36px; font-weight: bold; }
+.kalan-tutar { font-size: 36px; font-weight: bold; color: #fff; }
 .etiket-alt { color: #555; font-size: 9px; letter-spacing: 2px; margin-top: 5px; }
-
 .gelir-alani { display: flex; gap: 8px; margin-bottom: 20px; padding: 0 15px; }
-.gelir-alani input { flex: 2; background: #000; border: 1px solid var(--green); border-radius: 12px; padding: 15px; color: var(--green); outline: none; }
+.gelir-alani input { flex: 2; background: #000; border: 1px solid var(--green); border-radius: 12px; padding: 15px; color: var(--green); outline: none; font-size: 16px; }
 .set-et-btn { flex: 1; background: #000; border: 2px solid var(--green); border-radius: 12px; color: var(--green); font-weight: bold; cursor: pointer; }
-
 .kucuk-kartlar { display: flex; gap: 10px; margin-bottom: 20px; padding: 0 15px; }
 .kucuk-kart { flex: 1; background: var(--card); border: 1px solid #222; padding: 15px; border-radius: 15px; text-align: center; }
 .deger-yesil { color: var(--green); font-weight: bold; font-size: 16px; }
 .deger-kirmizi { color: var(--red); font-weight: bold; font-size: 16px; }
-
 .sekmeler { display: flex; gap: 10px; margin-bottom: 15px; padding: 0 15px; }
-.sekme { flex: 1; background: #0a0a0a; border: 2px solid #333; padding: 14px; color: #444; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.sekme { flex: 1; background: #0a0a0a; border: 2px solid #333; padding: 14px; color: #444; border-radius: 12px; font-weight: bold; cursor: pointer; }
 .sekme.active.red { border-color: var(--red); color: var(--red); box-shadow: 0 0 10px var(--red); }
 .sekme.active.green { border-color: var(--green); color: var(--green); box-shadow: 0 0 10px var(--green); }
-
 .kalem { background: #0d0d0d; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333; }
 .kalem.harcama { border-left-color: var(--red); }
 .kalem.yatirim { border-left-color: var(--green); }
 .sil-btn { color: var(--red); font-weight: bold; margin-left: 10px; cursor: pointer; }
-
 .giris-paneli { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: rgba(5,5,5,0.98); padding: 15px 15px 30px; border-top: 1px solid #333; left: 50%; transform: translateX(-50%); border-radius: 25px 25px 0 0; }
 .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
 .input-row input { flex: 1; background: #1a1a1a; border: 1px solid #444; padding: 15px; border-radius: 10px; color: white; outline: none; }
 .btn-kaydet { width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; border: 2px solid; background: transparent; }
 .harcama-modu { border-color: var(--red); color: var(--red); }
 .yatirim-modu { border-color: var(--green); color: var(--green); }
-
 .print-only { display: none !important; }
 @media print {
     .no-print { display: none !important; }
     .print-only { display: block !important; color: black; background: white; }
-    .kalem { border: 1px solid #ccc; color: black; margin-bottom: 5px; }
+    .report-summary { margin-top: 20px; border-top: 2px solid #000; padding-top: 10px; }
 }
