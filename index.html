@@ -2,82 +2,53 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekonomi Masası | Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ekonomi Masası</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="header">
-        <div class="header-title">Ekonomi Masası 📈</div>
-    </div>
-
-    <div class="filtre-merkezi">
-        <button class="filtre-btn" onclick="donemRaporuAc('hafta')">Haftalık</button>
-        <input type="date" id="gunluk-tarih" class="filtre-btn" onchange="gunlukRaporAc()">
-        <select id="ay-secici" class="filtre-btn" onchange="aylikRaporAc()">
-            <option value="">Ay Seçin</option>
-            <option value="0">Ocak</option>
-            <option value="1">Şubat</option>
-            <option value="2">Mart</option>
-            <option value="3">Nisan</option>
-            <option value="4">Mayıs</option>
-            <option value="5">Haziran</option>
-            <option value="6">Temmuz</option>
-            <option value="7">Ağustos</option>
-            <option value="8">Eylül</option>
-            <option value="9">Ekim</option>
-            <option value="10">Kasım</option>
-            <option value="11">Aralık</option>
-        </select>
-        <button class="filtre-btn" onclick="donemRaporuAc('yil')">Yıllık</button>
+        <h1 class="header-title">EKONOMİ MASASI 📈</h1>
     </div>
 
     <div class="ozet">
         <div class="buyuk-kart">
-            <div id="net-kalan" class="kalan-tutar">0 TL</div>
-            <div style="font-size: 11px; color: #666; margin-top: 5px; text-transform: uppercase;">Kullanılabilir Bakiye</div>
+            <div id="net-bakiye" class="kalan-tutar">0 TL</div>
+            <div style="color: #666; font-size: 12px; margin-top: 10px; letter-spacing: 2px;">KULLANILABİLİR BAKİYE</div>
         </div>
 
         <div class="gelir-alani">
-            <input type="number" id="gelir-input" placeholder="Gelir Miktarı" autocomplete="off">
-            <button onclick="gelirGuncelle()">SET ET</button>
+            <input type="number" id="bakiye-input" placeholder="Gelir Miktarı" onkeydown="if(event.key==='Enter') setBakiye()">
+            <button onclick="setBakiye()" class="set-et-btn">SET ET</button>
         </div>
 
         <div class="kucuk-kartlar">
             <div class="kucuk-kart">
                 <div class="label">Toplam Yatırım</div>
-                <div id="toplam-yatirim" style="color: #3498db; font-weight: bold;">0 TL</div>
+                <div id="toplam-yatirim" class="deger-yesil">0 TL</div>
             </div>
             <div class="kucuk-kart">
                 <div class="label">Toplam Gider</div>
-                <div id="toplam-harcama" style="color: #ff3355; font-weight: bold;">0 TL</div>
+                <div id="toplam-gider" class="deger-kirmizi">0 TL</div>
             </div>
         </div>
 
-        <div id="yatirim-grafik-konteyner" style="display:none; margin-bottom:20px; background:#111; border-radius:20px; padding:25px; border:1px solid #3498db33;">
-            <div class="label" style="text-align:center; margin-bottom:15px; color:#3498db;">Yatırım Dağılımı (%)</div>
-            <canvas id="yatirimChart"></canvas>
-            <div id="grafik-lejand" style="margin-top:20px; font-size:12px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;"></div>
-        </div>
-
         <div class="sekmeler">
-            <div class="sekme active" id="sekme-harcama" onclick="sekmeDegistir('harcama')">HARCAMALAR</div>
-            <div class="sekme" id="sekme-yatirim" onclick="sekmeDegistir('yatirim')">YATIRIMLAR</div>
+            <button id="sekme-harcama" class="sekme active" onclick="sekmeDegistir('harcama')">HARCAMALAR</button>
+            <button id="sekme-yatirim" class="sekme" onclick="sekmeDegistir('yatirim')">YATIRIMLAR</button>
         </div>
 
-        <div id="liste-container"></div>
+        <div id="islem-listesi"></div>
     </div>
 
     <div class="giris-paneli">
         <div class="input-row">
-            <input type="text" id="islem-adi" placeholder="Açıklama" autocomplete="off">
-            <input type="number" id="islem-miktar" placeholder="Miktar (TL)" autocomplete="off">
+            <input type="text" id="islem-aciklama" placeholder="Açıklama">
+            <input type="number" id="islem-miktar" placeholder="Miktar (TL)" onkeydown="if(event.key==='Enter') islemEkle()">
         </div>
-        <button class="btn-kaydet" id="btn-kaydet-islem" onclick="kaydet()">－ KAYDET</button>
+        <button id="btn-kaydet-islem" class="btn-kaydet harcama-modu" onclick="islemEkle()">－ HARCAMAYI KAYDET</button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="script.js"></script>
 </body>
 </html>
